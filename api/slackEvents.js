@@ -1,10 +1,18 @@
+require('dotenv').config();
+const axios = require('axios'); // Import axios
+const { WebClient } = require('@slack/web-api'); // Import WebClient from Slack
+
 module.exports = async (req, res) => {
+    // Initialize Slack client inside the function to ensure it has access to environment variables
+    const slackToken = process.env.SLACK_BOT_TOKEN;
+    const slackClient = new WebClient(slackToken);
+
     if (req.method === 'POST') {
         const { type, challenge, event } = req.body;
 
         // Respond to URL verification challenge
         if (type === 'url_verification') {
-            return res.status(200).send(challenge);  // Correctly send the challenge
+            return res.status(200).send(challenge);
         }
 
         // Process incoming messages
@@ -28,7 +36,7 @@ module.exports = async (req, res) => {
                     max_tokens: 50,
                 }, {
                     headers: {
-                        'Authorization': `Bearer ${openAiApiKey}`,
+                        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
                         'Content-Type': 'application/json',
                     },
                 });
@@ -46,9 +54,9 @@ module.exports = async (req, res) => {
         }
 
         // Respond with a 200 OK for all other requests
-        res.status(200).send('OK');  // Use res.status() instead of sendStatus()
+        res.status(200).send('OK');
     } else {
         res.setHeader('Allow', ['POST']);
-        res.status(405).send(`Method ${req.method} Not Allowed`);  // Use res.status() for method not allowed
+        res.status(405).send(`Method ${req.method} Not Allowed`);
     }
 };
