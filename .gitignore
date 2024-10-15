@@ -31,3 +31,4 @@ Thumbs.db
 .env
 # Optional npm cache directory
 .npm/
+.vercel
